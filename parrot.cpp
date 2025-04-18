@@ -17,13 +17,14 @@ using namespace std;
 
 class Options {
 private:
-    bool help_flag, list_flag, all_flag;
+    bool help_flag, list_flag, all_flag, case_flag;
     string target, folder, filename;
     chrono::time_point<chrono::high_resolution_clock> start_time; // Added for profiling
 
     Options(int argc, char *argv[]) 
-    : help_flag(false), list_flag(false), all_flag(false), target(""), folder(FOLDER_DEFAULT), filename(""),
-      start_time(chrono::time_point<chrono::high_resolution_clock>()) { // Initialize start_time to 0
+    : help_flag(false), list_flag(false), all_flag(false), case_flag(false),
+    target(""), folder(FOLDER_DEFAULT), filename(""),
+    start_time(chrono::time_point<chrono::high_resolution_clock>()) { // Initialize start_time to 0
         string topic = "";
         for (int i = 1; i < argc; ++i) {
             string arg_i = string(argv[i]);
@@ -61,8 +62,14 @@ private:
                 // List all targets
                 all_flag = true;
             }
+            else if (arg_i == "-c" || arg_i == "--case-sensitive") {
+                // Case sensitive search
+                case_flag = true;
+            }
             else if (arg_i == "-t" || arg_i == "--test-times") {
-                start_time = chrono::high_resolution_clock::now(); // Set start_time to now() if test flag is set
+                // Profiling mode
+                // Set start_time to now() if test flag is set
+                start_time = chrono::high_resolution_clock::now(); 
             }
             else if (arg_i[0] == '-') {
                 cerr << "Unknown option: " << arg_i << endl;
@@ -119,18 +126,20 @@ private:
     string getFilename() const { return filename; }
     bool isList() const { return list_flag; }
     bool isAll() const { return all_flag; }
+    bool isCase() const { return case_flag; }
     void help() const {
         cout << "Usage: program [options] [topic] [target]" << endl;
         cout << "Options:" << endl;
-        cout << "  -h, --help          Show this help message" << endl;
-        cout << "  -l, --list         List all targets" << endl;
-        cout << "  -a, --all          List all matching targets" << endl;
-        cout << "  -t, --test-times   Enable profiling mode" << endl;
-        cout << "  --folder=FOLDER    Specify the folder to search in (default: " << FOLDER_DEFAULT << ")" << endl;
-        cout << "  -F=FOLDER          Specify the folder to search in (default: " << FOLDER_DEFAULT << ")" << endl;
-        cout << "  -F, --folder-path  Print the folder path" << endl;
-        cout << "  --filename=FILE    Specify the filename to search in" << endl;
-        cout << "  -f=FILE            Specify the filename to search in" << endl;
+        cout << "  -h, --help            Show this help message" << endl;
+        cout << "  -l, --list            List all targets" << endl;
+        cout << "  -a, --all             List all matching targets" << endl;
+        cout << "  -c, --case-sensitive  Enable case-sensitive search" << endl;
+        cout << "  -t, --test-times      Enable profiling mode" << endl;
+        cout << "  --folder=FOLDER       Specify the folder to search in (default: " << FOLDER_DEFAULT << ")" << endl;
+        cout << "  -F=FOLDER             Specify the folder to search in (default: " << FOLDER_DEFAULT << ")" << endl;
+        cout << "  -F, --folder-path     Print the folder path" << endl;
+        cout << "  --filename=FILE       Specify the filename to search in" << endl;
+        cout << "  -f=FILE               Specify the filename to search in" << endl;
     }
     ~Options() {
         // Destructor
@@ -213,8 +222,14 @@ int main(int argc, char* argv[]) {
         // Looks for the target
         if (!options->getTarget().empty()) {
             regex pattern(PATTERN);  // match a target-like line
-            regex patternA(PATTERN_A(options->getTarget()), regex_constants::icase);  // match the target
-            regex patternB(PATTERN_B(options->getTarget()), regex_constants::icase);  // match a target like the target
+            regex patternA(
+                PATTERN_A(options->getTarget()),
+                (options->isCase() ? regex_constants::ECMAScript :  regex_constants::icase)
+            );  // match the target
+            regex patternB(PATTERN_B(
+                options->getTarget()),
+                (options->isCase() ? regex_constants::ECMAScript :  regex_constants::icase)
+            );  // match a target like the target
             string line;
             vector<streampos> matchA_positions;
             vector<streampos> matchB_positions;

@@ -19,5 +19,5 @@
 # Features
 - No need to specify full hashtag
 - Deals also with multiple reference to same hashtag
-- Up to now is not case sensitive
+- By default is case insensitive
 - With -h options you get full info.
