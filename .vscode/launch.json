@@ -7,7 +7,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/bin/parrot_debug",
-            "args": ["-t", "bash", "ls"],
+            "args": ["-t", "-F=/home/lore/test/Files", "test_7",  "Himself", "-a"],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],
