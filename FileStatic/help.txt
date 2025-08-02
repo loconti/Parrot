@@ -1,0 +1,15 @@
+# -h # --help
+
+Usage: program [options] [topic] [target]
+    options:
+    -h, --help          Show this help message
+    -l, --list          List all targets
+    -a,  --all          List all matching targets
+    -c                  Enable case-sensitive search
+    --case-sensitive    Enable case-sensitive search
+    -F=FOLDER           Specify the folder to search in
+    --folder=FOLDER     Specify the folder to search in
+    --folder-path       Print the folder path
+    -f=FILE             Specify the filename to search in
+    --filename=FILE     Specify the filename to search in
+    --test-times        Enable profiling mode

@@ -4,8 +4,13 @@
 #include <fstream>
 #include <regex>
 
-#define FOLDER_DEFAULT "/home/lore/Programs/Parrot/Files/"
-#define EXTENSION_DEFAULT ".txt"
+#define FOLDER_DEFAULT "Files/"
+// only FOLDER_STATIC is included in the repo
+#define FOLDER_STATIC "FileStatic/"
+// DO NOT CHANGE  THE LAST VALUE
+//   it's an empty string to signal the end of vector
+#define IMPLEMENTED_EXTENSIONS {".txt", ".md", ""}  
+#define END_WITH_NEW_LINE false
 #define PATTERN "\\s*#.*"
 #define ESCAPE_REGEX(T) regex_replace(T, regex(R"([.^$|()\\*+?{}[\]])"), R"(\$&)")
 #define PATTERN_A(T) (R"(\s*#+\s*)" + ESCAPE_REGEX(T) + R"(\s*(?:#.*|$))")
@@ -20,6 +25,14 @@ using namespace std;
 
 void print_matches(streampos pos, ifstream& file, regex pattern);
 
+string implemented_extensions[] = IMPLEMENTED_EXTENSIONS;
+bool is_extension(string ext) {
+    for (int i=0; !implemented_extensions[i].empty(); i++) {
+        if (ext == implemented_extensions[i])
+            return true;
+    }
+    return false;
+}
 
 class Parrot {
     private:
@@ -82,9 +95,9 @@ class Options {
     bool isAll() const { return all_flag; }
     bool isCase() const { return case_flag; }
     void help() const {
-        Parrot parrot(FOLDER_DEFAULT "help.txt", "-h");
+        Parrot parrot(FOLDER_STATIC "help.txt", "-h");
         if (!parrot.print()) {
-            cerr << "Data in" FOLDER_DEFAULT "not accessible" << endl;
+            cerr << "Data in" FOLDER_STATIC "not accessible" << endl;
         }
     }
     ~Options() {
@@ -95,7 +108,8 @@ class Options {
             auto duration = chrono::duration_cast<chrono::milliseconds>(end_time - start_time).count();
             cout << "\nExecution time: " << duration << " ms" << endl;
         }
-        cout << endl;
+        if (END_WITH_NEW_LINE)
+            cout << endl;
     }
 };
 
@@ -136,7 +150,7 @@ int main(int argc, char* argv[]) {
                 if (
                     entry.is_directory() ||
                     entry.path().filename().string().front() == '.' || 
-                    entry.path().filename().extension() != ".txt"
+                    is_extension(entry.path().filename().extension())
                 ) {
                     continue;
                 }
@@ -273,7 +287,7 @@ start_time(chrono::time_point<chrono::high_resolution_clock>()) { // Initialize 
         }
         else if (arg_i == "-F" || arg_i == "--folder-path"){
             // print the folder path
-            cout << folder << endl;
+            cout << std::filesystem::current_path().string() + "/" + folder << endl;
             throw std::runtime_error("Folder path requested");
         }
         else if (arg_i.find("--filename=") == 0) {
@@ -313,7 +327,7 @@ start_time(chrono::time_point<chrono::high_resolution_clock>()) { // Initialize 
 
     if (filename.empty() && !topic.empty()) {
         // If no filename is provided, use the topic as the filename
-        filename = folder + topic + EXTENSION_DEFAULT;
+        filename = folder + topic + implemented_extensions[0];
     }
     if (list_flag) {
         // If list_flag is set, all targets are listed
