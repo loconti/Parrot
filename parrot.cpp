@@ -135,8 +135,9 @@ int main(int argc, char* argv[]) {
     catch (const std::runtime_error& e) {
         if (e.what() != std::string("Help requested") && e.what() != std::string("Folder path requested")) {
             cerr << "-h to get help" << endl;
+            return 1;
         }
-        return 1;
+        return 0;
     }
     
     // No topic so we list all topics
@@ -265,7 +266,9 @@ int main(int argc, char* argv[]) {
 
 Options::Options(int argc, char *argv[]): 
 help_flag(false), list_flag(false), all_flag(false), case_flag(false),
-target(""), folder(FOLDER_DEFAULT), filename(""),
+target(""),
+folder(std::filesystem::current_path().string() + "/" + FOLDER_DEFAULT),
+filename(""),
 start_time(chrono::time_point<chrono::high_resolution_clock>()) { // Initialize start_time to 0
     string topic = "";
     for (int i = 1; i < argc; ++i) {

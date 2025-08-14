@@ -1,16 +1,13 @@
-# Retrive info from text files with Parrot
+# Retrive info from text and markdown files with Parrot
 
 # Install
 - Download and save parrot to a directory of your choice
-- Set the correct directory in parrot.sh
-- Link the script to /usr/local/bin/parrot
-```bash
-ln -s "<parrot folder>/parrot.sh" /usr/local/bin/parrot
-```
-- Link your parrot files to Files directory with
-```bash
-ln -s "<your parrot file>" "$(parrot --folder-path)<your parrot file>"
-```
+- Run install script inside its own directory
+- To give a file to parrot without providing or --folder --filename each time:
+  Create a link to ./Files folder with parrot-link:
+  ```bash
+  parrot-link <path to the file>
+  ```
 
 # Parrot Files
 - Any file of text with a series of alternating text lines and multiple hashtags to retrive it
