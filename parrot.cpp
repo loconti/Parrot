@@ -9,7 +9,8 @@
 #define FOLDER_STATIC "FileStatic/"
 // DO NOT CHANGE  THE LAST VALUE
 //   it's an empty string to signal the end of vector
-#define IMPLEMENTED_EXTENSIONS {".txt", ".md", ""}  
+#define IMPLEMENTED_EXTENSIONS {".txt", ".md", ""}  // Do not change the last value
+    // the empty string stops the iteration in is_extension function
 #define END_WITH_NEW_LINE false
 #define PATTERN "\\s*#.*"
 #define ESCAPE_REGEX(T) regex_replace(T, regex(R"([.^$|()\\*+?{}[\]])"), R"(\$&)")
@@ -151,7 +152,7 @@ int main(int argc, char* argv[]) {
                 if (
                     entry.is_directory() ||
                     entry.path().filename().string().front() == '.' || 
-                    is_extension(entry.path().filename().extension())
+                    !is_extension(entry.path().filename().extension())
                 ) {
                     continue;
                 }
@@ -290,7 +291,7 @@ start_time(chrono::time_point<chrono::high_resolution_clock>()) { // Initialize 
         }
         else if (arg_i == "-F" || arg_i == "--folder-path"){
             // print the folder path
-            cout << std::filesystem::current_path().string() + "/" + folder << endl;
+            cout << folder << endl;
             throw std::runtime_error("Folder path requested");
         }
         else if (arg_i.find("--filename=") == 0) {

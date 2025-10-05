@@ -7,7 +7,6 @@
             "request": "launch",
             "program": "${workspaceFolder}/bin/parrot_debug",
             "args": [
-                "-h"
             ],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
